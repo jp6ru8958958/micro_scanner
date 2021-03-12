@@ -1,0 +1,5 @@
+Begin	
+Read(a, bb);
+C :=(a+321);
+  --b yy
+End$
