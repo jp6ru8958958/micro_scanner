@@ -6,7 +6,7 @@ use std::fs;
 
 fn scanner(contents: String) {
     println!("scanner()");
-    let mut in_char: char = getchar();
+    let in_char: char = getchar();
     if in_char == '$' {
         println!("SCANEOF");
     }
@@ -21,8 +21,59 @@ fn scanner(contents: String) {
              *               | ID UNDERSCORE
              */
             buffer_char(in_char);
+            loop {
+                let c = getchar();
+                if isalnum(c)||c=='_' { buffer_char(c); } else { break; }
+            }
+            ungetc();
+            check_reserved();
+        } else if isdigit(in_char) {
+            /*
+             * INILITERAL ::= DIGIT | INTLITERAL DIGIT
+             */
+            buffer_char(in_char);
+            loop {
+                let c = getchar();
+                if isdigit(c) { buffer_char(c); } else { break; }
+            } 
+            println!("INTLITERAL");
+        } else if in_char == ':' {
+            let c = getchar();
+            if c == '=' {
+                println!("ASSIGNOP");
+            } else {
+                ungetc();
+                lexical_error();
+            }
+        } else if in_char == '-' {
+            let c = getchar();
+            if c == '-' {
+                loop {
+                    if in_char == '\n' { break; }
+                    in_char == getchar();
+                }
+            } else {
+                ungetc();
+                println!("MINUSOP");
+            }
+        } else if in_char == '(' { 
+            println!("LPAREN"); 
+        } else if in_char == ')' {
+            println!("RPAREN");
+        } else if in_char == ';' {
+            println!("SEMICOLON");
+        } else if in_char == ',' {
+            println!("COMMA");
+        } else if in_char == '+' {
+            println!("PLUSOP");
+        } else {
+            lexical_error();
         }
     }
+}
+
+fn check_reserved() {
+    println!("check_reserved()");
 }
 
 fn clear_buffer() {
@@ -37,6 +88,14 @@ fn getchar() -> char {
     println!("getchar()");
     let c = ' ';
     return c;
+}
+
+fn ungetc() {
+    println!("ungetc()");
+}
+
+fn lexical_error() {
+    println!("lexical_error()");
 }
 
 fn buffer_char(c: char) {
@@ -59,7 +118,7 @@ fn isalnum(c: char) -> bool{
 }
 
 fn isdigit(c: char) -> bool{
-    println!("iddigit()");
+    println!("isdigit()");
     true
 }
 
