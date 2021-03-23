@@ -4,9 +4,41 @@
 use std::env;
 use std::fs;
 
+struct Text {
+    content: String,
+    pos: u32,
+    pre: u32,
+    buffer: String,
+}
+
+impl Text {
+    fn clear_buffer(self) {
+        println!("clear_buffer()");
+    }
+
+    fn getchar(self) -> char {
+        println!("getchar()");
+        return ' ';
+    }
+
+    fn ungetc(self) {
+        println!("ungetc()");
+    }
+}
+
+fn contents_parse(contents: String) -> Text {
+    Text {
+        content: contents,
+        pos: 0,
+        pre: 0,
+        buffer: "".to_string(),
+    }
+}
+
 fn scanner(contents: String) {
+    let text = contents_parse(contents);
     println!("scanner()");
-    let in_char: char = getchar();
+    let in_char: char = text.getchar();
     if in_char == '$' {
         println!("SCANEOF");
     }
@@ -22,10 +54,10 @@ fn scanner(contents: String) {
              */
             buffer_char(in_char);
             loop {
-                let c = getchar();
+                let c = text.getchar();
                 if isalnum(c)||c=='_' { buffer_char(c); } else { break; }
             }
-            ungetc();
+            text.ungetc();
             check_reserved();
         } else if isdigit(in_char) {
             /*
@@ -33,27 +65,27 @@ fn scanner(contents: String) {
              */
             buffer_char(in_char);
             loop {
-                let c = getchar();
+                let c = text.getchar();
                 if isdigit(c) { buffer_char(c); } else { break; }
             } 
             println!("INTLITERAL");
         } else if in_char == ':' {
-            let c = getchar();
+            let c = text.getchar();
             if c == '=' {
                 println!("ASSIGNOP");
             } else {
-                ungetc();
+                text.ungetc();
                 lexical_error();
             }
         } else if in_char == '-' {
-            let c = getchar();
+            let c = text.getchar();
             if c == '-' {
                 loop {
+                    let in_char = text.getchar();
                     if in_char == '\n' { break; }
-                    in_char == getchar();
                 }
             } else {
-                ungetc();
+                text.ungetc();
                 println!("MINUSOP");
             }
         } else if in_char == '(' { 
@@ -75,25 +107,9 @@ fn scanner(contents: String) {
 fn check_reserved() {
     println!("check_reserved()");
 }
-
-fn clear_buffer() {
-    println!("clear_buffer()");
-}
-
 fn feof(in_char: char) {
     println!("feof()");
 }
-
-fn getchar() -> char {
-    println!("getchar()");
-    let c = ' ';
-    return c;
-}
-
-fn ungetc() {
-    println!("ungetc()");
-}
-
 fn lexical_error() {
     println!("lexical_error()");
 }
